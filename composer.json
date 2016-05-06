@@ -1,0 +1,14 @@
+{
+    "name": "beast/cloud",
+    "require": {
+        "tyurderi/slim-mvc": "2.0.0.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tyurderi",
+            "email": "tyurderi@yahoo.de"
+        }
+    ],
+    "minimum-stability": "stable"
+}
