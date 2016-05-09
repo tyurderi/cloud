@@ -19,5 +19,6 @@ interface FilesystemInterface
     public function exists($filename);
     public function cwd();
     public function root();
+    public function good();
 
 }

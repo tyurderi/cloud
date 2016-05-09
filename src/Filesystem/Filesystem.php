@@ -30,6 +30,8 @@ class Filesystem implements FilesystemInterface
 
     protected $saveDir     = '';
 
+    protected $good        = false;
+
     public function __construct($saveDir)
     {
         $this->fileCache   = new Cache();
@@ -37,6 +39,11 @@ class Filesystem implements FilesystemInterface
         $this->workingDir  = '/';
         $this->workingFile = $this->root();
         $this->saveDir     = $saveDir;
+    }
+
+    public function good()
+    {
+        return $this->good;
     }
     
     public function cd($directory = '')
@@ -49,7 +56,9 @@ class Filesystem implements FilesystemInterface
             $this->workingFile = $file;
         }
 
-        return $file !== false;
+        $this->good = $file !== false;
+
+        return $this;
     }
     
     public function ls($directory = '')
@@ -144,10 +153,12 @@ class Filesystem implements FilesystemInterface
         {
             file_put_contents($this->saveDir . '/' . $file->localName, $content);
 
-            return true;
+            $this->good = true;
         }
 
-        return false;
+        $this->good = false;
+
+        return $this;
     }
     
     public function copy($from, $to)
@@ -166,10 +177,14 @@ class Filesystem implements FilesystemInterface
             $file->id       = 0;
             $file->parentID = $directory->id;
 
-            return $file->save();
+            $this->good = $file->save();
+        }
+        else
+        {
+            $this->good = false;
         }
 
-        return false;
+        return $this;
     }
     
     public function move($from, $to)
@@ -187,17 +202,22 @@ class Filesystem implements FilesystemInterface
         {
             $file->parentID = $directory->id;
 
-            return $file->save();
+            $this->good = $file->save();
+        }
+        else
+        {
+            $this->good = false;
         }
 
-        return false;
+        return $this;
     }
     
     public function exists($filename)
     {
-        $filename = $this->normalizeFilename($filename);
+        $filename   = $this->normalizeFilename($filename);
+        $this->good = $this->resolveFile($filename) !== false;
 
-        return $this->resolveFile($filename) !== false;
+        return $this;
     }
     
     public function remove($filename)
@@ -217,10 +237,14 @@ class Filesystem implements FilesystemInterface
                 }
             }
 
-            return $file->delete();
+            $this->good = $file->delete();
+        }
+        else
+        {
+            $this->good = false;
         }
 
-        return false;
+        return $this;
     }
     
     public function removeDir($directory, $recursive = false)
@@ -262,12 +286,19 @@ class Filesystem implements FilesystemInterface
                 }
                 
                 $this->fileCache->clear();
+                $this->good = true;
             }
             else
             {
                 $this->remove($directory); // okay, because we're caching models
             }
         }
+        else
+        {
+            $this->good = false;
+        }
+
+        return $this;
     }
     
     public function makeDir($directory, $recursive = false)
@@ -309,8 +340,12 @@ class Filesystem implements FilesystemInterface
             {
                 $tempFile = $this->createFolder(end($parts), $file->id);
                 $tempFile->save();
+
+                return $tempFile;
             }
         }
+
+        return false;
     }
 
     private function createFolder($name, $parentID)
