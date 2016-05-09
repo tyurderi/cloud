@@ -2,7 +2,7 @@
 
 namespace Beast\Cloud\Models;
 
-use Slim\MVC\Model\ModelAbstract;
+use Slim\Mvc\Model\ModelAbstract;
 
 class File extends ModelAbstract
 {

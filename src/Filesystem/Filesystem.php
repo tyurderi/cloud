@@ -142,8 +142,8 @@ class Filesystem implements FilesystemInterface
             $file->name      = basename($filename);
             $file->extension = pathinfo($filename, PATHINFO_EXTENSION);
             $file->type      = File::TYPE_FILE;
-            $file->localName = md5($filename);
             $file->created   = date('Y-m-d H:i:s');
+            $file->localName = $this->generateFilename($file);
         }
 
         $file->changed = date('Y-m-d H:i:s');
@@ -151,7 +151,8 @@ class Filesystem implements FilesystemInterface
 
         if ($file->save())
         {
-            file_put_contents($this->saveDir . '/' . $file->localName, $content);
+            $filename = $this->saveDir . '/' . $file->localName;
+            file_put_contents($filename, $content);
 
             $this->good = true;
         }
@@ -307,10 +308,19 @@ class Filesystem implements FilesystemInterface
         $file      = $this->root();
         $parts    = explode('/', $directory);
 
-        if ($recursive)
+        if ($this->resolveFile($directory))
+        {
+            $this->good = true;
+        }
+        else if ($recursive)
         {
             foreach($parts as $part)
             {
+                if (empty($part))
+                {
+                    continue;
+                }
+
                 $records = $this->repository->findBy(array(
                     'parentID'  => $file->id,
                     'name'      => $part
@@ -320,9 +330,10 @@ class Filesystem implements FilesystemInterface
                 {
                     $tempFile = $this->createFolder($part, $file->id);
 
-                    if ($tempFile->save())
+                    if ($fileId = $tempFile->save())
                     {
-                        $file = $tempFile;
+                        $file     = $tempFile;
+                        $file->id = $fileId;
                     }
                 }
                 else
@@ -330,6 +341,8 @@ class Filesystem implements FilesystemInterface
                     $file = $records->first();
                 }
             }
+
+            $this->good = true;
 
             return $file;
         }
@@ -339,7 +352,7 @@ class Filesystem implements FilesystemInterface
             if ($file = $this->resolveFile($parentDirectory))
             {
                 $tempFile = $this->createFolder(end($parts), $file->id);
-                $tempFile->save();
+                $this->good = $tempFile->save() !== false;
 
                 return $tempFile;
             }
@@ -348,14 +361,23 @@ class Filesystem implements FilesystemInterface
         return false;
     }
 
+    private function generateFilename(File $file)
+    {
+        return hash('sha256', $file->name . $file->parentID);
+    }
+
     private function createFolder($name, $parentID)
     {
         $file = new File();
-        $file->parentID = $parentID;
-        $file->name     = $name;
-        $file->type     = File::TYPE_FOLDER;
-        $file->created  = date('Y-m-d H:i:s');
-        $file->changed  = date('Y-m-d H:i:s');
+        $file->parentID  = $parentID;
+        $file->name      = $name;
+        $file->type      = File::TYPE_FOLDER;
+        $file->created   = date('Y-m-d H:i:s');
+        $file->changed   = date('Y-m-d H:i:s');
+
+        $file->extension = '';
+        $file->size      = 0;
+        $file->localName = '';
 
         return $file;
     }
@@ -365,7 +387,7 @@ class Filesystem implements FilesystemInterface
         $filename = str_replace('//', '/', $filename);
         if ($filename[0] !== '/')
         {
-            $filename = $this->workingDir . $filename;
+            $filename = $this->workingDir . '/' . $filename;
         }
 
         return $filename;
@@ -380,6 +402,11 @@ class Filesystem implements FilesystemInterface
 
             foreach ($parts as $part)
             {
+                if (empty($part))
+                {
+                    continue;
+                }
+
                 $records = $this->repository->findBy(array(
                     'parentID'  => $file->id,
                     'name'      => $part
