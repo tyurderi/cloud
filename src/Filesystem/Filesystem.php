@@ -171,6 +171,8 @@ class Filesystem implements FilesystemInterface
 
         if ($file = $this->resolveFile($filename))
         {
+            $this->fileCache->delete($filename);
+            
             return $file->delete();
         }
 
