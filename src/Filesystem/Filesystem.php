@@ -6,6 +6,7 @@ use Beast\Cloud\Interfaces\FilesystemInterface;
 use Beast\Cloud\Models\File;
 use Slim\Mvc\App;
 use Slim\Mvc\Model\Entity\Repository;
+use Slim\Mvc\Model\Entity\ResultSet;
 
 class Filesystem implements FilesystemInterface
 {
@@ -193,32 +194,51 @@ class Filesystem implements FilesystemInterface
         $file      = $this->root();
         $parts    = explode('/', $directory);
 
-        foreach($parts as $part)
+        if ($recursive)
         {
-            $records = $this->repository->findBy(array(
-                'parentID'  => $file->id,
-                'name'      => $part
-            ));
-
-            if ($records->count() === 0)
+            foreach($parts as $part)
             {
-                $tempFile = new File();
-                $tempFile->parentID = $file->id;
-                $tempFile->type     = File::TYPE_FOLDER;
-                $tempFile->created  = date('Y-m-d H:i:s');
-                $tempFile->changed  = date('Y-m-d H:i:s');
-                $tempFile->name     = $part;
+                $records = $this->repository->findBy(array(
+                    'parentID'  => $file->id,
+                    'name'      => $part
+                ));
 
-                if ($tempFile->save())
+                if ($records->count() === 0)
                 {
-                    $file = $tempFile;
+                    $tempFile = $this->createFolder($part, $file->id);
+
+                    if ($tempFile->save())
+                    {
+                        $file = $tempFile;
+                    }
+                }
+                else
+                {
+                    $file = $records->first();
                 }
             }
-            else
+        }
+        else
+        {
+            $parentDirectory = dirname($directory);
+            if ($file = $this->resolveFile($parentDirectory))
             {
-                $file = $records->first();
+                $tempFile = $this->createFolder(end($parts), $file->id);
+                $tempFile->save();
             }
         }
+    }
+
+    private function createFolder($name, $parentID)
+    {
+        $file = new File();
+        $file->parentID = $parentID;
+        $file->name     = $name;
+        $file->type     = File::TYPE_FOLDER;
+        $file->created  = date('Y-m-d H:i:s');
+        $file->changed  = date('Y-m-d H:i:s');
+
+        return $file;
     }
 
     private function normalizeFilename($filename)
