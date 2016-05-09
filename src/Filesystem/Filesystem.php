@@ -177,6 +177,15 @@ class Filesystem implements FilesystemInterface
         {
             $this->fileCache->delete($filename);
 
+            if ($file->type == File::TYPE_FILE)
+            {
+                $filename = $this->saveDir . '/' . $file->localName;
+                if (is_file($filename))
+                {
+                    unlink($filename);
+                }
+            }
+
             return $file->delete();
         }
 
@@ -204,6 +213,15 @@ class Filesystem implements FilesystemInterface
                 {
                     if ($child->type == File::TYPE_FILE)
                     {
+                        if ($child->type == File::TYPE_FILE)
+                        {
+                            $filename = $this->saveDir . '/' . $child->localName;
+                            if (is_file($filename))
+                            {
+                                unlink($filename);
+                            }
+                        }
+
                         $child->delete();
                     }
                     else
