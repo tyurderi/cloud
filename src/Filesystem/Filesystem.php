@@ -22,6 +22,9 @@ class Filesystem implements FilesystemInterface
 
     protected $workingDir  = '/';
 
+    /**
+     * @var File
+     */
     protected $workingFile = null;
 
     protected $saveDir     = '';
@@ -172,7 +175,7 @@ class Filesystem implements FilesystemInterface
         if ($file = $this->resolveFile($filename))
         {
             $this->fileCache->delete($filename);
-            
+
             return $file->delete();
         }
 
@@ -187,6 +190,35 @@ class Filesystem implements FilesystemInterface
     public function makeDir($directory, $recursive = false)
     {
         $directory = $this->normalizeFilename($directory);
+        $file      = $this->root();
+        $parts    = explode('/', $directory);
+
+        foreach($parts as $part)
+        {
+            $records = $this->repository->findBy(array(
+                'parentID'  => $file->id,
+                'name'      => $part
+            ));
+
+            if ($records->count() === 0)
+            {
+                $tempFile = new File();
+                $tempFile->parentID = $file->id;
+                $tempFile->type     = File::TYPE_FOLDER;
+                $tempFile->created  = date('Y-m-d H:i:s');
+                $tempFile->changed  = date('Y-m-d H:i:s');
+                $tempFile->name     = $part;
+
+                if ($tempFile->save())
+                {
+                    $file = $tempFile;
+                }
+            }
+            else
+            {
+                $file = $records->first();
+            }
+        }
     }
 
     private function normalizeFilename($filename)
