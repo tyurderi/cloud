@@ -154,12 +154,43 @@ class Filesystem implements FilesystemInterface
     {
         $from = $this->normalizeFilename($from);
         $to   = $this->normalizeFilename($to);
+
+        $targetDirectory = dirname($to);
+        if (!($directory = $this->resolveFile($targetDirectory)))
+        {
+            $directory = $this->makeDir($targetDirectory, true);
+        }
+
+        if ($file = $this->resolveFile($from))
+        {
+            $file->id       = 0;
+            $file->parentID = $directory->id;
+
+            return $file->save();
+        }
+
+        return false;
     }
     
     public function move($from, $to)
     {
         $from = $this->normalizeFilename($from);
         $to   = $this->normalizeFilename($to);
+
+        $targetDirectory = dirname($to);
+        if (!($directory = $this->resolveFile($targetDirectory)))
+        {
+            $directory = $this->makeDir($targetDirectory, true);
+        }
+
+        if ($file = $this->resolveFile($from))
+        {
+            $file->parentID = $directory->id;
+
+            return $file->save();
+        }
+
+        return false;
     }
     
     public function exists($filename)
@@ -268,6 +299,8 @@ class Filesystem implements FilesystemInterface
                     $file = $records->first();
                 }
             }
+
+            return $file;
         }
         else
         {
