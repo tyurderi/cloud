@@ -211,6 +211,8 @@ class Filesystem implements FilesystemInterface
                         $this->removeDir($child, true);
                     }
                 }
+                
+                $this->fileCache->clear();
             }
             else
             {

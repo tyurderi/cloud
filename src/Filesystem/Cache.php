@@ -35,4 +35,9 @@ class Cache
         }
     }
 
+    public function clear()
+    {
+        $this->files = array();
+    }
+
 }
