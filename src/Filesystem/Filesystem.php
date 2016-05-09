@@ -185,7 +185,38 @@ class Filesystem implements FilesystemInterface
     
     public function removeDir($directory, $recursive = false)
     {
-        $directory = $this->normalizeFilename($directory);
+        if (!($directory instanceof File))
+        {
+            $directory = $this->normalizeFilename($directory);
+            $directory      = $this->resolveFile($directory);
+        }
+
+        if ($file = $directory)
+        {
+            if ($recursive)
+            {
+                /** @var File[]|ResultSet $children */
+                $children = $this->repository->findBy(array(
+                    'parentID'  => $file->id,
+                ));
+
+                foreach ($children as $child)
+                {
+                    if ($child->type == File::TYPE_FILE)
+                    {
+                        $child->delete();
+                    }
+                    else
+                    {
+                        $this->removeDir($child, true);
+                    }
+                }
+            }
+            else
+            {
+                $this->remove($directory); // okay, because we're caching models
+            }
+        }
     }
     
     public function makeDir($directory, $recursive = false)
