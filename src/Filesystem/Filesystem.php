@@ -197,7 +197,7 @@ class Filesystem implements FilesystemInterface
         if (!($directory instanceof File))
         {
             $directory = $this->normalizeFilename($directory);
-            $directory      = $this->resolveFile($directory);
+            $directory = $this->resolveFile($directory);
         }
 
         if ($file = $directory)
