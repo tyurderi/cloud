@@ -67,7 +67,7 @@ class Filesystem implements FilesystemInterface
         {
             $directory = $this->workingDir;
         }
-        
+
         $directory = $this->normalizeFilename($directory);
         $files     = array();
 
@@ -200,17 +200,20 @@ class Filesystem implements FilesystemInterface
         $from = $this->normalizeFilename($from);
         $to   = $this->normalizeFilename($to);
 
-        $targetDirectory = dirname($to);
-        if (!($directory = $this->resolveFile($targetDirectory)))
-        {
-            $directory = $this->makeDir($targetDirectory, true);
-        }
-
         if ($file = $this->resolveFile($from))
         {
-            $file->parentID = $directory->id;
+            var_dump($from, $file);
+            $targetDirectory = dirname($to);
+            if (!($directory = $this->resolveFile($targetDirectory)))
+            {
+                $directory = $this->makeDir($targetDirectory, true);
+            }
 
-            $this->good = $file->save();
+            $file->parentID  = $directory->id;
+            $file->name      = basename($to);
+            $file->extension = pathinfo($file->name, PATHINFO_EXTENSION);
+
+            $this->good = $file->save() !== 0;
         }
         else
         {
@@ -416,6 +419,8 @@ class Filesystem implements FilesystemInterface
         {
             $filename = $this->workingDir . '/' . $filename;
         }
+
+        $filename = '/' . trim($filename, '/');
 
         return $filename;
     }
