@@ -11,7 +11,7 @@ class IndexController extends \Slim\Mvc\Controller
 
         $fs->touch('test.cpp');
 
-        $fs->move('test.cpp', 'test.h');
+        $fs->copy('test.cpp', 'test.h');
 
         var_dump($fs->good());
 

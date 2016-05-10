@@ -174,16 +174,18 @@ class Filesystem implements FilesystemInterface
         $from = $this->normalizeFilename($from);
         $to   = $this->normalizeFilename($to);
 
-        $targetDirectory = dirname($to);
-        if (!($directory = $this->resolveFile($targetDirectory)))
-        {
-            $directory = $this->makeDir($targetDirectory, true);
-        }
-
         if ($file = $this->resolveFile($from))
         {
-            $file->id       = 0;
-            $file->parentID = $directory->id;
+            $targetDirectory = dirname($to);
+            if (!($directory = $this->resolveFile($targetDirectory)))
+            {
+                $directory = $this->makeDir($targetDirectory, true);
+            }
+
+            $file->id        = 0;
+            $file->parentID  = $directory->id;
+            $file->name      = basename($to);
+            $file->extension = pathinfo($file->name, PATHINFO_EXTENSION);
 
             $this->good = $file->save();
         }
