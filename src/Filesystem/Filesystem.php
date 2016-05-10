@@ -187,7 +187,7 @@ class Filesystem implements FilesystemInterface
             $file->name      = basename($to);
             $file->extension = pathinfo($file->name, PATHINFO_EXTENSION);
 
-            $this->good = $file->save();
+            $this->good = $file->save() !== 0;
         }
         else
         {
