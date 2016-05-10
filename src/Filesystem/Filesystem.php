@@ -149,15 +149,17 @@ class Filesystem implements FilesystemInterface
         $file->changed = date('Y-m-d H:i:s');
         $file->size    = strlen($content);
 
-        if ($file->save())
+        if ($fileId = $file->save())
         {
             $filename = $this->saveDir . '/' . $file->localName;
             file_put_contents($filename, $content);
 
             $this->good = true;
         }
-
-        $this->good = false;
+        else
+        {
+            $this->good = false;
+        }
 
         return $this;
     }
