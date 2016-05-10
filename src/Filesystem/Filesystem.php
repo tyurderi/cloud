@@ -63,6 +63,11 @@ class Filesystem implements FilesystemInterface
     
     public function ls($directory = '')
     {
+        if (empty($directory))
+        {
+            $directory = $this->workingDir;
+        }
+        
         $directory = $this->normalizeFilename($directory);
         $files     = array();
 
@@ -240,7 +245,7 @@ class Filesystem implements FilesystemInterface
                 }
             }
 
-            $this->good = $file->delete();
+            $this->good = $file->delete() !== false;
         }
         else
         {
@@ -287,6 +292,8 @@ class Filesystem implements FilesystemInterface
                         $this->removeDir($child, true);
                     }
                 }
+
+                $file->delete();
                 
                 $this->fileCache->clear();
                 $this->good = true;
@@ -404,12 +411,11 @@ class Filesystem implements FilesystemInterface
     private function normalizeFilename($filename)
     {
         $filename = str_replace('//', '/', $filename);
+
         if ($filename[0] !== '/')
         {
             $filename = $this->workingDir . '/' . $filename;
         }
-
-        $filename = trim($filename, '/');
 
         return $filename;
     }

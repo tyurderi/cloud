@@ -14,6 +14,19 @@ class IndexController extends \Slim\Mvc\Controller
 
         $fs->touch('Cache.php');
 
+        $fs->remove('Cache.php');
+
+        $fs->removeDir('/dev', true);
+
+        $fs->cd('/');
+        $fs->makeDir('cpp files');
+        $fs->cd('cpp files');
+
+        $fs->touch('pathfind.cpp');
+        $fs->touch('pathfind.h');
+
+        var_dump($fs->ls());
+
         var_dump($fs->good());
 
         //$fs->makeDir('dev/php/beast_cloud');
