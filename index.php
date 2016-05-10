@@ -18,12 +18,15 @@ $app = Slim\Mvc\App::instance(array(
         'view.cache_path'     => '',
         'view.resources_path' => 'resources/',
 
-        'database.host'   => 'localhost',
-        'database.shem'   => 'cloud',
-        'database.user'   => 'root',
-        'database.pass'   => '',
+        'database.host'    => 'localhost',
+        'database.shem'    => 'cloud',
+        'database.user'    => 'root',
+        'database.pass'    => '',
 
-        'cache.path'      => APP_DIR . '/cache'
+        'cache.path'       => APP_DIR . '/cache',
+	'plugin.instances' => array(
+		
+	)
     ),
     'settings' => array(
         'displayErrorDetails' => true

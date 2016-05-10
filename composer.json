@@ -1,7 +1,7 @@
 {
     "name": "beast/cloud",
     "require": {
-        "tyurderi/slim-mvc": "2.0.0.1"
+        "tyurderi/slim-mvc": "2.2"
     },
     "license": "MIT",
     "authors": [

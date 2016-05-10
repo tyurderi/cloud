@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c4ef242b928752030b8822f9c158e4a9",
-    "content-hash": "3a042a5822b86ac0039bd3e731434f60",
+    "hash": "cfe144fc58f125065be4700fa299c7e0",
+    "content-hash": "4aa3716f00d7e9258e4f255767d2bd8f",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -451,16 +451,16 @@
         },
         {
             "name": "tyurderi/slim-mvc",
-            "version": "2.0.0.1",
+            "version": "2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tyurderi/slim-mvc.git",
-                "reference": "1cd80ecbefd75118ef08740edb8102edb5efd38b"
+                "reference": "641055ffb22dec4b1e0c20167c0325da30f48f06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tyurderi/slim-mvc/zipball/1cd80ecbefd75118ef08740edb8102edb5efd38b",
-                "reference": "1cd80ecbefd75118ef08740edb8102edb5efd38b",
+                "url": "https://api.github.com/repos/tyurderi/slim-mvc/zipball/641055ffb22dec4b1e0c20167c0325da30f48f06",
+                "reference": "641055ffb22dec4b1e0c20167c0325da30f48f06",
                 "shasum": ""
             },
             "require": {
@@ -488,7 +488,7 @@
                     "email": "tyurderi@yahoo.de"
                 }
             ],
-            "time": "2016-04-23 17:34:00"
+            "time": "2016-05-10 12:19:24"
         }
     ],
     "packages-dev": [],

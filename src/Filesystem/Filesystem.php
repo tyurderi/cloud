@@ -8,7 +8,7 @@ use Slim\Mvc\App;
 use Slim\Mvc\Model\Entity\Repository;
 use Slim\Mvc\Model\Entity\ResultSet;
 
-class Filesystem implements FilesystemInterface
+class Filesystem extends \Slim\Mvc\DI\Injectable implements FilesystemInterface
 {
 
     /**
@@ -34,8 +34,10 @@ class Filesystem implements FilesystemInterface
 
     public function __construct($saveDir)
     {
+	parent::__construct();
+
         $this->fileCache   = new Cache();
-        $this->repository  = App::instance()->models()->repository('Beast\Cloud\Models\File');
+        $this->repository  = $this->models()->repository('Beast\Cloud\Models\File');
         $this->workingDir  = '/';
         $this->workingFile = $this->root();
         $this->saveDir     = $saveDir;
