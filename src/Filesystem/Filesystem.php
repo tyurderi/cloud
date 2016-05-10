@@ -384,6 +384,23 @@ class Filesystem implements FilesystemInterface
         return $file;
     }
 
+    private function checkFilename($filename)
+    {
+        $disallowedChars = '<>:"\\|?*';
+        $valid           = true;
+
+        for ($i = 0; $i < 8; $i++)
+        {
+            if (strpos($filename, $disallowedChars[$i]) !== false)
+            {
+                $valid = false;
+                break;
+            }
+        }
+
+        return $valid;
+    }
+
     private function normalizeFilename($filename)
     {
         $filename = str_replace('//', '/', $filename);
@@ -391,6 +408,8 @@ class Filesystem implements FilesystemInterface
         {
             $filename = $this->workingDir . '/' . $filename;
         }
+
+        $filename = trim($filename, '/');
 
         return $filename;
     }
